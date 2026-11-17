@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+lib/
+
+# Build output
+out/
+cache/
+broadcast/
+typechain-types/
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Foundry artifacts
+*.bin
+*.abi
+*.metadata.json
+
+# SDD metadata (ephemeral tool cache)
+.atl/
+
+# Logs
+*.log
+npm-debug.log*
