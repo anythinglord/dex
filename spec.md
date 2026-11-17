@@ -153,7 +153,106 @@ function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] ca
 - ✅ Code documented (NatSpec)
 - ✅ No reentrancy vulnerabilities
 
-## 11. Implementation Plan (MVP) — 4 Phases, 27 Tasks
+## 11. Versioning Strategy
+
+### Version Mapping
+| Phase | Version | Scope |
+|-------|---------|-------|
+| Phase 1: Foundation | `v0.1.0` | Toolchain, interfaces, math libraries |
+| Phase 2: Pair AMM | `v0.2.0` | Core AMM + LP tokens + pricing lib |
+| Phase 3: Factory + Router | `v0.3.0` | CREATE2 + slippage + deploy |
+| Phase 4: Verification | `v0.4.0` | Integration, fuzzing, gas, docs |
+| Post-MVP (stable) | `v1.0.0` | Mainnet-ready, audit, full docs |
+
+### Semantic Versioning Rules
+- **Minor versions** (v0.x.0): Each phase adds new functionality
+- **Major version** (v1.0.0): Post-MVP stable release for production
+- **Patch versions** (v0.x.y): Bug fixes on existing phases (if needed)
+
+## 12. CI/CD & Release Automation
+
+### Conventional Commits
+All commits follow Conventional Commits specification:
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation changes
+- `chore:` Tooling, config, dependencies
+- `test:` Test additions/changes
+- `refactor:` Code refactoring
+
+### GitHub Actions Workflows
+
+#### 1. CI Pipeline (`.github/workflows/ci.yml`)
+Triggers on: push to any branch, PR to develop/main
+```yaml
+- forge build (compilation check)
+- forge test (unit + integration tests)
+- forge coverage --report summary (coverage ≥ 95%)
+- forge test --gas-report (gas benchmark)
+```
+
+#### 2. Develop Branch (`.github/workflows/develop.yml`)
+Triggers on: push to `develop`
+```yaml
+- Run full test suite
+- Generate changelog with git-cliff
+- Commit updated CHANGELOG.md back to develop
+```
+
+#### 3. Release to Main (`.github/workflows/release.yml`)
+Triggers on: push to `main`
+```yaml
+- Run full test suite
+- Auto-detect version from conventional commits (semantic-release)
+- Create git tag (v0.1.0, v0.2.0, etc.)
+- Generate release notes from changelog
+- Create GitHub Release with tag
+```
+
+### Changelog Generation
+**Tool**: `git-cliff` (Rust-based, fast, Conventional Commits native)
+
+Config: `cliff.toml` in repo root
+```bash
+# Manual generation (if needed)
+git cliff --tag v0.2.0 --output CHANGELOG.md
+```
+
+### Release Flow
+1. Feature branch → PR to `develop`
+2. Merge to `develop` → CI runs → changelog auto-updated
+3. `develop` → PR to `main` (release PR)
+4. Merge to `main` → auto-tag (v0.x.0) → GitHub Release created
+5. Tag triggers deployment workflow (if applicable)
+
+## 13. Testing Workflow (Mentor Mode)
+
+### Test Creation Process
+1. **User implements core logic** (e.g., `mint(to)` function)
+2. **Mentor reviews** → provides feedback via hint ladder (5 levels)
+3. **User corrects** until logic is correct
+4. **Mentor creates tests** (unit tests for the function)
+5. **User reviews tests** → audit together
+6. **Move to next subtask**
+
+### Test Types
+- **Unit tests**: Each public function with happy path + edge cases
+- **Integration tests**: Full flows (addLiquidity → swap → removeLiquidity)
+- **Fuzzing**: Invariant testing (`k' >= k`, LP supply bounds, reserve consistency)
+- **Gas benchmarks**: `forge test --gas-report` for optimization
+
+### What Mentor Does Without Asking
+- Bookkeeping (foundry.toml, remappings, CI config)
+- Interface stubs
+- Bookkeeping tests (non-core)
+- Build errors, environment issues
+
+### What User Does
+- Core logic (x*y=k, LP mint/burn, swap math)
+- Review mentor's tests and provide feedback
+- Validate fuzzing invariants
+
+## 14. Implementation Plan (MVP) — 4 Phases, 27 Tasks
 
 ### Phase 1: Foundation (PR 1) — ~650 lines
 
@@ -232,7 +331,7 @@ And swap gas < 150k, **the MVP is done**.
 
 Then offer: "You wrote these parts: [X, Y, Z]. Bonus round?"
 
-## 12. Post-MVP (Optional)
+## 15. Post-MVP (Optional)
 
 ### Phase 2: Oracle & Advanced Features
 - TWAP oracle (price0CumulativeLast, price1CumulativeLast)
@@ -260,25 +359,41 @@ Then offer: "You wrote these parts: [X, Y, Z]. Bonus round?"
 - Go indexer for events
 - GraphQL API for queries
 
-## 13. Architecture Decisions
+## 16. Architecture Decisions
 
-### 13.1 Tooling
+### 16.1 Tooling
 - **Decision:** Pure Foundry (no Hardhat)
 - **Reason:** Native forge test + forge fuzz, faster, unified stack
 - **Trade-off:** Loses compatibility with monorepo (which uses Hardhat), but gains speed and simplicity
 
-### 13.2 Protocol Fee
+### 16.2 Protocol Fee
 - **Decision:** Immutable (no protocol fee in MVP)
 - **Reason:** Simplicity, no admin keys, more decentralized
 - **Trade-off:** No revenue for future maintenance, but philosophically purer
 - **Post-MVP:** feeToSetter can be added as optional upgrade
 
-### 13.3 Reentrancy Defense
+### 16.3 Reentrancy Defense
 - **Decision:** Hybrid (optimistic transfer + k-check + OZ ReentrancyGuard)
 - **Reason:** Defense in depth, follow Uniswap v2 canonical pattern
 - **Trade-off:** Slightly more gas, but critical security
 
-## 14. Risks and Mitigations
+### 16.4 Versioning & Release
+- **Decision:** Semantic versioning per phase (v0.1.0 → v0.4.0), auto-tag on main
+- **Reason:** Clear milestones, automated releases, easy rollback per phase
+- **Trade-off:** Requires CI/CD setup upfront, but saves manual work later
+- **Flow:** develop accumulates changelog → main creates tag + GitHub Release
+
+### 16.5 Changelog Automation
+- **Decision:** git-cliff (Rust-based, fast, Conventional Commits native)
+- **Reason:** Minimal config, fast generation, integrates with semantic-release
+- **Trade-off:** Another dependency, but lightweight and proven
+
+### 16.6 CI/CD Strategy
+- **Decision:** GitHub Actions with 3 workflows (CI, develop, release)
+- **Reason:** Native GitHub integration, free for public repos, easy to maintain
+- **Trade-off:** Vendor lock-in to GitHub, but acceptable for open-source project
+
+## 17. Risks and Mitigations
 
 | Risk | Severity | Mitigation |
 |------|----------|------------|
@@ -288,7 +403,7 @@ Then offer: "You wrote these parts: [X, Y, Z]. Bonus round?"
 | Front-running | Medium | Deadline + slippage tolerance (inherent to AMMs) |
 | Fuzzing false confidence | Medium | Handlers must model adversaries, failing sequences → regression tests |
 
-## 15. Documentation
+## 18. Documentation
 
 - NatSpec on all public functions
 - README.md with: what it is, how to deploy, how to test, architecture

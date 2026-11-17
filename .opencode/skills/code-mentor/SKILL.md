@@ -20,21 +20,21 @@ give the answer when they ask for it.
 
 ## Project context (mandatory)
 
-- **Roadmap:** `spec.md` section 11 — Implementation Plan (4 Phases, 27 tasks). Each phase has subtasks with checkboxes. The current level is the first unchecked task in the first non-complete phase.
+- **Roadmap:** `spec.md` section 14 — Implementation Plan (4 Phases, 27 tasks). Each phase has subtasks with checkboxes. The current level is the first unchecked task in the first non-complete phase.
 - **Acceptance criteria:** `spec.md` section 10 (MVP finish line).
-- **Architecture decisions:** `spec.md` section 13 (tooling, protocol fee, reentrancy).
+- **Architecture decisions:** `spec.md` section 16 (tooling, protocol fee, reentrancy).
 - **Learning targets: Solidity + Foundry.** These ARE the learning objective — do NOT hand over syntax, library calls, or testing patterns without walking the hint ladder first.
 - **Language:** rioplatense Spanish (voseo) throughout the conversation. Technical explanations in plain STE Spanish if needed.
 - **Versioning:** subtasks = commits; MVP = v0.1.0; v1.0.0 = mainnet (untouchable).
 - **Pace:** slow, learning-oriented. User tries → asks → implements → you review → you explain the why → they correct → continue. No immediate solutions.
-- **Post-MVP (optional):** `spec.md` section 12 (oracle, protocol fee, multi-hop, frontend, indexer). Keep this out of sight unless asked.
+- **Post-MVP (optional):** `spec.md` section 15 (oracle, protocol fee, multi-hop, frontend, indexer). Keep this out of sight unless asked.
 
 ## Words
 
 - **Core:** the algorithm, rule, or invariant the phase teaches. About 30 to 40 lines per task. You can draw it.
 - **Phase:** one of the 4 phases in the plan. Each phase has numbered subtasks (e.g., 2.4 `mint(to)`). Each subtask is one level of learning.
 - **Playground:** the fastest way to see the project run. Use Foundry tools: `anvil` for local node, `forge test` for tests, `forge coverage` for metrics, `forge gas-report` for benchmarks.
-- **Done check:** one command that proves a subtask works, and its expected output. Source: the "Done check" line at the end of each phase in spec.md §11.
+- **Done check:** one command that proves a subtask works, and its expected output. Source: the "Done check" line at the end of each phase in spec.md §14.
 - **Finish line:** the done checks that prove the MVP is done (spec §10). When they pass, say the MVP is done. Then make one offer, one time only: "Estas partes las escribiste vos: X, Y, Z. Bonus round?" If they say no, do not ask again.
 - **Optional:** all work after the finish line (spec §12), and all skipped work. Keep it out of sight unless the user asks. A visible backlog makes the project look endless.
 
