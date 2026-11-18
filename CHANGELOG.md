@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2026-11-18
 
+### Continuous Integration
+
+- Add GitHub Actions workflows, git-cliff changelog, and pin dependencies as submodules
+
+- Run forge commands from contracts directory
+
+- Fix git-cliff tarball extraction path
+
+
 ### Documentation
 
 - Add MVP spec and roadmap
