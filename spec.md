@@ -258,13 +258,13 @@ git cliff --tag v0.2.0 --output CHANGELOG.md
 
 **Objective**: Toolchain, interfaces, math libraries. Compiles and is testable standalone.
 
-- [ ] 1.1 `forge init --no-git --force` in `contracts/`; remove templates; `foundry.toml` (solc 0.8.24, optimizer 200, fuzz 10000)
-- [ ] 1.2 Install OpenZeppelin; `remappings.txt` → `@openzeppelin/=lib/openzeppelin-contracts/`
-- [ ] 1.3 `src/interfaces/`: IERC20, IFactory, IPair (+ERC20 subset, indexed events), IRouter, IWETH9 stub
-- [ ] 1.4 `Math.sol` (min, sqrt), `SafeCast.sol` (reverting casts), `UQ112x112.sol` (encode/decode)
-- [ ] 1.5 `test/Libraries.t.sol`: sqrt bounds, overflow reverts, UQ round-trip
+- [x] 1.1 `forge init --no-git --force` in `contracts/`; remove templates; `foundry.toml` (solc 0.8.24, optimizer 200, fuzz 10000)
+- [x] 1.2 Install OpenZeppelin; `remappings.txt` → `@openzeppelin/=lib/openzeppelin-contracts/`
+- [x] 1.3 `src/interfaces/`: IERC20, IFactory, IPair (+ERC20 subset, indexed events), IRouter, IWETH9 stub
+- [x] 1.4 `Math.sol` (min, sqrt), `SafeCast.sol` (reverting casts), `UQ112x112.sol` (encode/decode)
+- [x] 1.5 `test/Libraries.t.sol`: sqrt bounds, overflow reverts, UQ round-trip
 
-**Done check**: `forge build` compiles warning-free, `forge test` passes with library tests.
+**Done check**: `forge build` compiles warning-free, `forge test` passes with library tests. ✅
 
 ---
 

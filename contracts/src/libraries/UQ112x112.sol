@@ -26,6 +26,7 @@ library UQ112x112 {
     /// @param self The UQ112x112 value to decode
     /// @return The uint144 result (integer part)
     function decode(uint224 self) internal pure returns (uint144) {
+        // forge-lint: disable-next-line(unsafe-typecast) // self/Q112 ≤ 2^112-1 < uint144.max
         return uint144(self / Q112);
     }
 }

@@ -9,6 +9,7 @@ library SafeCast {
     /// @return result The uint112 result
     function toUint112(uint256 value) internal pure returns (uint112 result) {
         require(value <= type(uint112).max, "SafeCast: overflow");
+        // forge-lint: disable-next-line(unsafe-typecast) // guardado por el require de arriba
         result = uint112(value);
     }
 }
