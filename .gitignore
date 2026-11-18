@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-lib/
+# NOTE: Foundry deps in contracts/lib/ are tracked as git submodules (not ignored)
 
 # Build output
 out/
