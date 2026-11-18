@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERC20 - Estándar de Tokens Fungibles</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+        
+        .toc {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .toc a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .toc a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #e74c3c;
+        }
+        
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        pre code {
+            background: none;
+            color: #ecf0f1;
+            padding: 0;
+        }
+        
+        .scenario {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        
+        .scenario h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        
+        .ascii-diagram {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .function-list {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .function-list code {
+            display: block;
+            margin: 8px 0;
+            padding: 8px;
+            background: #fff;
+            border-left: 3px solid #3498db;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 3px;
+        }
+        
+        .warning strong {
+            color: #856404;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 ERC20 - Estándar de Tokens Fungibles</h1>
+        
+        <div class="toc">
+            <h3>📖 Tabla de Contenidos</h3>
+            <ul>
+                <li><a href="#que-es">¿Qué es ERC20?</a></li>
+                <li><a href="#funciones">Las 6 Funciones</a></li>
+                <li><a href="#eventos">Los 2 Eventos</a></li>
+                <li><a href="#trazado">Trazado con Valores Reales</a></li>
+                <li><a href="#approve-transferfrom">¿Por qué approve + transferFrom en 2 pasos?</a></li>
+                <li><a href="#diagrama">Diagrama de Flujos</a></li>
+                <li><a href="#reglas">Reglas Importantes</a></li>
+            </ul>
+        </div>
+        
+        <h2 id="que-es">¿Qué es ERC20?</h2>
+        <p>Es el estándar de <strong>tokens fungibles</strong> en Ethereum. "Fungible" = cada token vale lo mismo que otro (a diferencia de un NFT).</p>
+        <p>USDC, UNI, DAI — todos son ERC20.</p>
+        <p>Define <strong>6 funciones</strong> y <strong>2 eventos</strong> que TODO token debe implementar.</p>
+        
+        <h2 id="funciones">Las 6 Funciones</h2>
+        <div class="function-list">
+            <code>1. totalSupply() → uint256</code>
+            <p style="margin-left: 20px; color: #666;">Cuántos tokens existen</p>
+            
+            <code>2. balanceOf(address) → uint256</code>
+            <p style="margin-left: 20px; color: #666;">Cuántos tiene una dirección</p>
+            
+            <code>3. transfer(to, amount) → bool</code>
+            <p style="margin-left: 20px; color: #666;">Mando tokens de MI wallet</p>
+            
+            <code>4. approve(spender, amount) → bool</code>
+            <p style="margin-left: 20px; color: #666;">Autorizo a otro a gastar mis tokens</p>
+            
+            <code>5. transferFrom(from, to, amount) → bool</code>
+            <p style="margin-left: 20px; color: #666;">Otro mueve MIS tokens (con permiso)</p>
+            
+            <code>6. allowance(owner, spender) → uint256</code>
+            <p style="margin-left: 20px; color: #666;">Cuánto me autorizó alguien</p>
+        </div>
+        
+        <h2 id="eventos">Los 2 Eventos</h2>
+        <pre><code>event Transfer(address indexed from, address indexed to, uint256 value);
+event Approval(address indexed owner, address indexed spender, uint256 value);</code></pre>
+        <p><strong>indexed:</strong> permite filtrar eventos por ese parámetro (máximo 3 parámetros indexados por evento)</p>
+        
+        <h2 id="trazado">Trazado con Valores Reales</h2>
+        
+        <div class="scenario">
+            <h3>Escenario Inicial</h3>
+            <p><strong>Alice tiene 1000 USDC, quiere mandarle 200 a Bob</strong></p>
+            <pre><code>Estado inicial:
+  balanceOf(Alice) = 1000
+  balanceOf(Bob)   = 0
+  totalSupply()    = 1000 (Alice los tiene todos)</code></pre>
+        </div>
+        
+        <h3>Caso A: Transferencia directa (Alice → Bob)</h3>
+        <pre><code>Alice llama: transfer(Bob, 200)
+
+Dentro del contrato:
+  balanceOf(Alice) = 1000 - 200 = 800  ✓
+  balanceOf(Bob)   = 0 + 200   = 200  ✓
+  totalSupply()    = 1000 (no cambia, solo se mueven)
+  
+Emite: Transfer(Alice, Bob, 200)
+Retorna: true</code></pre>
+        
+        <h3>Caso B: Alice le da permiso a un Router (DEX) para gastar 500</h3>
+        <pre><code>Estado inicial:
+  allowance(Alice, Router) = 0
+
+Alice llama: approve(Router, 500)
+
+Dentro del contrato:
+  allowance(Alice, Router) = 500  ✓
+
+Emite: Approval(Alice, Router, 500)
+Retorna: true</code></pre>
+        
+        <h3>Caso C: El Router mueve 300 de Alice a Charlie (usando el permiso)</h3>
+        <pre><code>Estado inicial:
+  balanceOf(Alice)         = 800
+  balanceOf(Charlie)       = 100
+  allowance(Alice, Router) = 500
+
+Router llama: transferFrom(Alice, Charlie, 300)
+
+Dentro del contrato:
+  require(allowance(Alice, Router) >= 300)  ✓ (500 >= 300)
+  
+  balanceOf(Alice)   = 800 - 300 = 500  ✓
+  balanceOf(Charlie) = 100 + 300 = 400  ✓
+  allowance(Alice, Router) = 500 - 300 = 200  ✓ (se reduce el permiso)
+  
+Emite: Transfer(Alice, Charlie, 300)
+Retorna: true</code></pre>
+        
+        <h2 id="approve-transferfrom">¿Por qué approve + transferFrom en 2 pasos?</h2>
+        
+        <div class="warning">
+            <strong>Problema de seguridad:</strong> Si <code>approve</code> + <code>transfer</code> fueran una sola llamada, el Router podría gastar TODOS mis tokens (no hay límite).
+        </div>
+        
+        <h3>Solución en 2 pasos:</h3>
+        <ol>
+            <li>Alice aprueba 500 al Router → <code>approve(Router, 500)</code></li>
+            <li>Router solo puede gastar hasta 500 → <code>transferFrom(Alice, ..., amount &lt;= 500)</code></li>
+            <li>Cada <code>transferFrom</code> reduce el allowance</li>
+        </ol>
+        
+        <div class="highlight">
+            <strong>Esto es lo que vas a usar cuando el Router del DEX mueva tokens del usuario al Pair.</strong>
+        </div>
+        
+        <h2 id="diagrama">Diagrama de Flujos</h2>
+        <div class="ascii-diagram">
+<pre>USUAL FLOW (Alice → Router → Pair):
+
+[Alice]
+  │
+  ├─ 1. approve(Router, 500)     ← da permiso
+  │
+  ▼
+[Router]
+  │
+  ├─ 2. transferFrom(Alice, Pair, 300)   ← mueve tokens
+  │      (gasta del allowance)
+  │
+  ▼
+[Pair contract]</pre>
+        </div>
+        
+        <h2 id="reglas">Reglas Importantes</h2>
+        <ul>
+            <li><code>transfer</code> <strong>revert</strong> si <code>balanceOf(sender) &lt; amount</code></li>
+            <li><code>transferFrom</code> <strong>revert</strong> si <code>allowance &lt; amount</code></li>
+            <li><code>approve</code> puede sobrescribir (cuidado con race conditions, pero no lo vemos ahora)</li>
+            <li>Eventos <code>Transfer</code> y <code>Approval</code> deben emitirse <strong>SIEMPRE</strong> (incluso con amount = 0)</li>
+        </ul>
+        
+        <div class="warning" style="margin-top: 30px;">
+            <strong>💡 Próximos pasos:</strong> Implementar <code>IERC20.sol</code> con estas 6 funciones y 2 eventos en <code>contracts/src/interfaces/</code>
+        </div>
+        
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #ecf0f1; color: #7f8c8d; font-size: 14px;">
+            <p><strong>Documento:</strong> ERC20 Standard Guide</p>
+            <p><strong>Proyecto:</strong> Uniswap v2 DEX</p>
+            <p><strong>Última actualización:</strong> 2026-02-17</p>
+        </div>
+    </div>
+</body>
+</html>
