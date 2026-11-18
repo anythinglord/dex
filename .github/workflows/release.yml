@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Tag & GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        run: |
+          curl -sSfL https://github.com/orhun/git-cliff/releases/download/v2.14.2/git-cliff-2.14.2-x86_64-unknown-linux-gnu.tar.gz \
+            | tar -xz -C /tmp
+          sudo install /tmp/git-cliff-2.14.2/git-cliff /usr/local/bin/git-cliff
+
+      - name: Compute next version
+        id: version
+        run: |
+          NEXT="v$(git cliff --bumped-version 2>/dev/null | tail -n 1)"
+          echo "version=${NEXT}" >> "$GITHUB_OUTPUT"
+          echo "Next version: ${NEXT}"
+
+      - name: Create tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists — skipping"
+            exit 0
+          fi
+          NOTES=$(git cliff --tag "$VERSION" --latest --strip all 2>/dev/null)
+          gh release create "$VERSION" --title "$VERSION" --notes "$NOTES"
